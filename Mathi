@@ -1,0 +1,88 @@
+import java.util.*;
+
+public class Main {
+    static int[][] board;
+    static int size = 3; // 3x3 puzzle
+    static int blankRow, blankCol;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        initializeBoard();
+        shuffleBoard();
+
+        while (true) {
+            printBoard();
+            if (isSolved()) {
+                System.out.println("Congratulations! You solved the puzzle!");
+                break;
+            }
+
+            System.out.print("Enter move (W/A/S/D): ");
+            char move = sc.next().toUpperCase().charAt(0);
+            makeMove(move);
+        }
+
+        sc.close();
+    }
+
+    static void initializeBoard() {
+        board = new int[size][size];
+        int num = 1;
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+                board[i][j] = num++;
+        board[size - 1][size - 1] = 0; // blank space
+        blankRow = size - 1;
+        blankCol = size - 1;
+    }
+
+    static void shuffleBoard() {
+        Random rand = new Random();
+        for (int i = 0; i < 1000; i++) {
+            int r = rand.nextInt(4);
+            makeMove("WASD".charAt(r));
+        }
+    }
+
+    static void printBoard() {
+        System.out.println("---------");
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (board[i][j] == 0)
+                    System.out.print("   ");
+                else
+                    System.out.printf("%2d ", board[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println("---------");
+    }
+
+    static void makeMove(char direction) {
+        int r = blankRow, c = blankCol;
+        switch (direction) {
+            case 'W': r++; break;
+            case 'S': r--; break;
+            case 'A': c++; break;
+            case 'D': c--; break;
+            default: return;
+        }
+
+        if (r >= 0 && r < size && c >= 0 && c < size) {
+            board[blankRow][blankCol] = board[r][c];
+            board[r][c] = 0;
+            blankRow = r;
+            blankCol = c;
+        }
+    }
+
+    static boolean isSolved() {
+        int num = 1;
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++) {
+                if (i == size - 1 && j == size - 1) return board[i][j] == 0;
+                if (board[i][j] != num++) return false;
+            }
+        return true;
+    }
+}
